@@ -1,6 +1,7 @@
 // src/components/LoginPage.tsx
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 //import axios from 'axios';
 
@@ -8,10 +9,16 @@ const LoginPage = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const { login } = useAuth();
+	const navigate = useNavigate();
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		login(username, password);
+		if (username === "login" && password === "1234") {
+			navigate("/photos");
+		} else {
+			alert("Niepoprawny login lub hasło");
+		}
 	};
 
 	/// DO USUNIĘCIA

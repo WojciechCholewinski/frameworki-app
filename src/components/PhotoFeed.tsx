@@ -26,7 +26,7 @@ const PhotoFeed = () => {
 			const response = await axios.get(url);
 			const photosWithOwnership = response.data.map((photo: Photo) => ({
 				...photo,
-				isOwner: Math.random() < 0.5, // Symulacja "właścicielstwa"
+				//isOwner: Math.random() < 0.5, // Symulacja "właścicielstwa"
 			}));
 			setPhotos(photosWithOwnership);
 		};

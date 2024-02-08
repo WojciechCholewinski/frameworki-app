@@ -1,5 +1,6 @@
 // src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
+//import { useNavigate } from "react-router-dom"; // Importujemy useNavigate
 
 interface AuthContextType {
 	isLoggedIn: boolean;
@@ -8,16 +9,23 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+// Definicja AuthProviderProps tutaj
 interface AuthProviderProps {
-	children: ReactNode; // Definiuje typ dla children
+	children: ReactNode;
 }
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	//const navigate = useNavigate(); // Używamy useNavigate
 
 	const login = (username: string, password: string) => {
-		// Tutaj można dodać logikę weryfikacji
-		setIsLoggedIn(true);
+		// Prosta logika weryfikacji
+		if (username === "login" && password === "1234") {
+			setIsLoggedIn(true);
+		} else {
+			alert("Niepoprawny login lub hasło");
+			// Tutaj można dodać dodatkową logikę, np. czyszczenie formularza
+		}
 	};
 
 	const logout = () => {
