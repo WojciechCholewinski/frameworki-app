@@ -5,6 +5,8 @@ import LoginPage from "./components/LoginPage";
 import PhotoFeed from "./components/PhotoFeed";
 import UserPage from "./components/UserPage";
 import UserSearch from "./components/UserSearch";
+import PhotoSearch from "./components/PhotoSearch";
+import PostsPage from "./components/PostsPage";
 
 // Import inne komponenty stron
 
@@ -17,6 +19,8 @@ const AppRoutes = () => {
 				<Route path='/photos' element={<PhotoFeed />} />
 				<Route path='/user' element={<UserPage />} />
 				<Route path='/search-users' element={<UserSearch />} />
+				<Route path='/search-photos' element={<PhotoSearch />} />
+				<Route path='/posts' element={<PostsPage />} />
 			</Routes>
 		</Router>
 	);
