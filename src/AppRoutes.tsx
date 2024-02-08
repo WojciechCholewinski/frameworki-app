@@ -13,6 +13,7 @@ import UserSearch from "./components/UserSearch";
 import PhotoSearch from "./components/PhotoSearch";
 import PostsPage from "./components/PostsPage";
 import { useAuth } from "./context/AuthContext"; // Upewnij się, że ścieżka jest poprawna
+import Navbar from "./components/NavBar"; // Upewnij się, że ścieżka jest poprawna
 
 interface PrivateRouteProps {
 	children: React.ReactElement;
@@ -29,6 +30,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 const AppRoutes = () => {
 	return (
 		<Router>
+			<Navbar /> {/* Dodajemy Navbar */}
 			<Routes>
 				<Route path='/login' element={<LoginPage />} />
 				{/* Tutaj dodaj inne ścieżki jako element={<Komponent />} */}

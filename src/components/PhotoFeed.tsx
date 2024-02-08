@@ -21,23 +21,27 @@ const PhotoFeed = () => {
 	// Funkcja do pobierania zdjęć z opcjonalnym filtrowaniem
 	useEffect(() => {
 		const fetchPhotos = async () => {
-			let url = "https://jsonplaceholder.typicode.com/photos?_limit=20";
-			if (userIdFilter) url += `&userId=${userIdFilter}`;
-			const response = await axios.get(url);
+			const response = await axios.get(
+				"https://jsonplaceholder.typicode.com/photos"
+			);
 			const photosWithOwnership = response.data.map((photo: Photo) => ({
 				...photo,
 				//isOwner: Math.random() < 0.5, // Symulacja "właścicielstwa"
 			}));
+			// Zakładamy, że wszystkie zdjęcia z API są początkowo załadowane
 			setPhotos(photosWithOwnership);
 		};
 
 		fetchPhotos();
-	}, [userIdFilter]); // Dodaj userIdFilter do tablicy zależności, aby na nowo pobierać zdjęcia przy zmianie filtra
-
+	}, []); // Usunięcie userIdFilter z zależności, aby pobierać tylko raz
+	const filteredPhotos = userIdFilter
+		? photos.filter(photo => String(photo.userId) === userIdFilter)
+		: photos;
 	// Funkcja do symulacji dodawania nowego zdjęcia
 	const handleAddPhoto = () => {
 		const newPhoto = {
-			id: Math.random(), // Symulacja generowania ID
+			id: Math.floor(Math.floor(Math.random() * 1001) + 5000), // Lepsza symulacja ID, użyj Math.floor dla całkowitych wartości
+
 			thumbnailUrl: newPhotoUrl,
 			title: newPhotoTitle,
 			userId: parseInt(userIdFilter) || 1, // Przykładowe przypisanie do użytkownika
@@ -81,7 +85,7 @@ const PhotoFeed = () => {
 			</div>
 
 			<div>
-				{photos.map(photo => (
+				{filteredPhotos.map(photo => (
 					<div key={photo.id}>
 						<img
 							src={photo.thumbnailUrl}
