@@ -1,6 +1,7 @@
 // src/components/PostsPage.tsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import UserDetails from "./UserDetails"; // Import nowego komponentu
 
 interface Post {
 	userId: number;
@@ -136,6 +137,8 @@ const PostsPage = () => {
 				<div key={post.id}>
 					<h3>{post.title}</h3>
 					<p>{post.body}</p>
+					<UserDetails userId={post.userId} /> // Wyświetlenie informacji o
+					użytkowniku
 					<div>
 						Komentarze:
 						{post.comments?.map(comment => (

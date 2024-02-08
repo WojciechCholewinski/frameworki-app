@@ -7,6 +7,7 @@ import UserPage from "./components/UserPage";
 import UserSearch from "./components/UserSearch";
 import PhotoSearch from "./components/PhotoSearch";
 import PostsPage from "./components/PostsPage";
+// import UserProfile from "./components/UserProfile";
 
 // Import inne komponenty stron
 
@@ -21,6 +22,7 @@ const AppRoutes = () => {
 				<Route path='/search-users' element={<UserSearch />} />
 				<Route path='/search-photos' element={<PhotoSearch />} />
 				<Route path='/posts' element={<PostsPage />} />
+				{/* <Route path='/user' element={<UserProfile />} /> */}
 			</Routes>
 		</Router>
 	);
