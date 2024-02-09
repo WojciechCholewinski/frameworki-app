@@ -12,8 +12,8 @@ import UserPage from "./components/UserPage";
 import UserSearch from "./components/UserSearch";
 import PhotoSearch from "./components/PhotoSearch";
 import PostsPage from "./components/PostsPage";
-import { useAuth } from "./context/AuthContext"; // Upewnij się, że ścieżka jest poprawna
-import Navbar from "./components/NavBar"; // Upewnij się, że ścieżka jest poprawna
+import { useAuth } from "./context/AuthContext"; 
+import Navbar from "./components/NavBar";
 
 interface PrivateRouteProps {
 	children: React.ReactElement;
@@ -23,9 +23,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 	return isLoggedIn ? children : <Navigate to='/login' />;
 };
 
-// import UserProfile from "./components/UserProfile";
 
-// Import inne komponenty stron
 
 const AppRoutes = () => {
 	return (
@@ -33,7 +31,7 @@ const AppRoutes = () => {
 			<Navbar /> {/* Dodajemy Navbar */}
 			<Routes>
 				<Route path='/login' element={<LoginPage />} />
-				{/* Tutaj dodaj inne ścieżki jako element={<Komponent />} */}
+				<Route path='/' element={<LoginPage />} />
 				<Route
 					path='/photos'
 					element={<PrivateRoute>{<PhotoFeed />}</PrivateRoute>}
@@ -42,10 +40,19 @@ const AppRoutes = () => {
 					path='/user'
 					element={<PrivateRoute>{<UserPage />}</PrivateRoute>}
 				/>
-				<Route path='/search-users' element={<UserSearch />} />
-				<Route path='/search-photos' element={<PhotoSearch />} />
-				<Route path='/posts' element={<PostsPage />} />
-				{/* <Route path='/user' element={<UserProfile />} /> */}
+				<Route
+					path='/search-users'
+					element={<PrivateRoute>{<UserSearch />}</PrivateRoute>}
+				/>
+				<Route
+					path='/search-photos'
+					element={<PrivateRoute>{<PhotoSearch />}</PrivateRoute>}
+				/>
+				<Route
+					path='/posts'
+					element={<PrivateRoute>{<PostsPage />}</PrivateRoute>}
+				/>
+
 			</Routes>
 		</Router>
 	);

@@ -3,7 +3,41 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-//import axios from 'axios';
+import styled from "styled-components";
+
+
+
+const LoginContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: flex-start; // Zmienione z center na flex-start
+	padding-top: 25vh; // Dodano padding u góry
+`;
+
+const Form = styled.form`
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 300px;
+`;
+
+const Input = styled.input`
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+`;
+
+const Button = styled.button`
+	padding: 10px;
+	border-radius: 5px;
+	border: none;
+	background-color: #007bff;
+	color: white;
+	cursor: pointer;
+	&:hover {
+		background-color: #0056b3;
+	}
+`;
 
 const LoginPage = () => {
 	const [username, setUsername] = useState("");
@@ -21,75 +55,25 @@ const LoginPage = () => {
 		}
 	};
 
-	/// DO USUNIĘCIA
-	// const handleLogin = async () => {
-	// 	// Tutaj możesz dodać logikę logowania, na przykład:
-	// 	// axios.post('url_do_backendu', { username, password })
-	// 	//   .then(response => {
-	// 	//     // Przechowaj token w localStorage lub przekieruj użytkownika
-	// 	//   })
-	// 	//   .catch(error => {
-	// 	//     // Obsługa błędu logowania
-	// 	//   });
-	// 	console.log("Logowanie", username, password);
-	// };
 
 	return (
-		<div>
-			<form onSubmit={handleSubmit}>
-				<input
+		<LoginContainer>
+			<Form onSubmit={handleSubmit}>
+				<Input
 					type='text'
 					placeholder='Username'
 					value={username}
 					onChange={e => setUsername(e.target.value)}
 				/>
-				<input
+				<Input
 					type='password'
 					placeholder='Password'
 					value={password}
 					onChange={e => setPassword(e.target.value)}
 				/>
-				<button type='submit'>Log In</button>
-			</form>
-			{/* DO USUNIĘCIA */}
-			{/* <div>
-				<h2>Logowanie</h2>
-				<input
-					type='text'
-					placeholder='Username'
-					value={username}
-					onChange={e => setUsername(e.target.value)}
-				/>
-				<input
-					type='password'
-					placeholder='Password'
-					value={password}
-					onChange={e => setPassword(e.target.value)}
-				/>
-				<button onClick={handleLogin}>Zaloguj się</button>
-			</div> */}
-		</div>
+				<Button type='submit'>Log In</Button>
+			</Form>
+		</LoginContainer>
 	);
 };
-
-// DO USUNIĘCIA
-// return (
-// 	<div>
-// 		<h2>Logowanie</h2>
-// 		<input
-// 			type='text'
-// 			placeholder='Username'
-// 			value={username}
-// 			onChange={e => setUsername(e.target.value)}
-// 		/>
-// 		<input
-// 			type='password'
-// 			placeholder='Password'
-// 			value={password}
-// 			onChange={e => setPassword(e.target.value)}
-// 		/>
-// 		<button onClick={handleLogin}>Zaloguj się</button>
-// 	</div>
-// );
-// };
 export default LoginPage;
