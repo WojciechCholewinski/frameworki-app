@@ -18,6 +18,7 @@ const UserSearch = () => {
 			<h2>Wyszukiwarka użytkowników</h2>
 			<input
 				type='text'
+				placeholder='wpisz login'
 				value={searchTerm}
 				onChange={e => setSearchTerm(e.target.value)}
 			/>

@@ -1,151 +1,90 @@
 // src/components/UserPage.tsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-interface Address {
-	street: string;
-	suite: string;
-	city: string;
-	zipcode: string;
-}
-interface User {
-	id: number;
-	name: string;
-	username: string;
-	email: string;
-	address: Address;
-	// address?: {
-	// 	street: string;
-	// 	suite: string;
-	// 	city: string;
-	// 	zipcode: string;
-}
-
-// Używając zdefiniowanego typu dla danych użytkownika
 const UserPage = () => {
-	const [userData, setUserData] = useState<User | null>(null);
-	const [editName, setEditName] = useState("");
-	const [editUsername, setEditUsername] = useState("");
-	const [editEmail, setEditEmail] = useState("");
-	const [editStreet, setEditStreet] = useState("");
-	const [editSuite, setEditSuite] = useState("");
-	const [editCity, setEditCity] = useState("");
-	const [editZipcode, setEditZipcode] = useState("");
-	const { userDetails } = useAuth();
+	const { userDetails, setUserDetails, userPhotos, userPosts } = useAuth();
+
+	const [editName, setEditName] = useState(userDetails?.name || "");
+	const [editUsername, setEditUsername] = useState(userDetails?.username || "");
+	const [editEmail, setEditEmail] = useState(userDetails?.email || "");
 
 	useEffect(() => {
-		const fetchUserData = async () => {
-			const response = await axios.get<User>(
-				"https://jsonplaceholder.typicode.com/users/1"
-			); // Zakładamy, że id użytkownika to 1 dla przykładu
-			setUserData(response.data);
-			setEditName(response.data.name); // Inicjalizacja stanu edytowanego imienia
-			setEditUsername(response.data.username);
-			setEditEmail(response.data.email);
-			setEditStreet(response.data.address.street);
-			setEditSuite(response.data.address.suite);
-			setEditCity(response.data.address.city);
-			setEditZipcode(response.data.address.zipcode);
-		};
-
-		fetchUserData();
-	}, []);
+		// Aktualizacja stanów formularza, gdy userDetails się zmienia
+		setEditName(userDetails?.name || "");
+		setEditUsername(userDetails?.username || "");
+		setEditEmail(userDetails?.email || "");
+	}, [userDetails]);
 
 	const handleEdit = () => {
-		if (userData) {
-			
-			// Symulacja aktualizacji danych użytkownika
-			setUserData({
-				...userData,
+		// Aktualizacja userDetails w kontekście
+		if (userDetails) {
+			setUserDetails({
+				...userDetails,
 				name: editName,
 				username: editUsername,
 				email: editEmail,
-				address: {
-					...userData.address,
-					street: editStreet,
-					suite: editSuite,
-					city: editCity,
-					zipcode: editZipcode,
-				},
 			});
 		}
 	};
-	if (!userData) return <div>Ładowanie danych użytkownika...</div>;
+
+	if (!userDetails) return <div>Ładowanie danych użytkownika...</div>;
 
 	return (
 		<div>
-			{/* do USUNIĘCIA */}
 			<h2>Strona użytkownika</h2>
-			<p>Nazwa użytkownika: {userData.username}</p>
-			<input
-				type='text'
-				value={editName}
-				onChange={e => setEditName(e.target.value)}
-			/>
-			<button onClick={handleEdit}>Zapisz zmiany</button>
-			<p>Imię: {userData.name}</p>
-			<p>Email: {userData.email}</p>
-			{/* ///////////////////////////////////////////// */}cz 2
 			<div>
-				<h2>Strona użytkownika</h2>
-				<div>
-					<label>Imię: </label>
-					<input
-						type='text'
-						value={editName}
-						onChange={e => setEditName(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Nazwa użytkownika: </label>
-					<input
-						type='text'
-						value={editUsername}
-						onChange={e => setEditUsername(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Email: </label>
-					<input
-						type='email'
-						value={editEmail}
-						onChange={e => setEditEmail(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Ulica: </label>
-					<input
-						type='text'
-						value={editStreet}
-						onChange={e => setEditStreet(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Suite: </label>
-					<input
-						type='text'
-						value={editSuite}
-						onChange={e => setEditSuite(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Miasto: </label>
-					<input
-						type='text'
-						value={editCity}
-						onChange={e => setEditCity(e.target.value)}
-					/>
-				</div>
-				<div>
-					<label>Kod pocztowy: </label>
-					<input
-						type='text'
-						value={editZipcode}
-						onChange={e => setEditZipcode(e.target.value)}
-					/>
-				</div>
-				<button onClick={handleEdit}>Zapisz zmiany</button>
+				<label>Imię i nazwisko: </label>
+				<input
+					type='text'
+					value={editName}
+					onChange={e => setEditName(e.target.value)}
+				/>
+			</div>
+
+			<div>
+				<label>login: </label>
+				<input
+					type='text'
+					value={editUsername}
+					onChange={e => setEditUsername(e.target.value)}
+				/>
+			</div>
+
+			<div>
+				<label>Mail: </label>
+				<input
+					type='text'
+					value={editEmail}
+					onChange={e => setEditEmail(e.target.value)}
+				/>
+			</div>
+
+			<button onClick={handleEdit}>Zapisz zmiany</button>
+
+			<div>
+				{userPhotos.map(photo => (
+					<div key={photo.id}>
+						<h3>Zdjęcia użytkownika</h3>
+						<img
+							src={photo.thumbnailUrl}
+							alt={photo.title}
+							style={{ width: "100px", height: "100px" }}
+						/>
+						<p>{photo.title}</p>
+					</div>
+				))}
+			</div>
+
+			<div>
+				{userPosts.map(post => (
+					<div key={post.id}>
+						<h3>Posty użytkownika {editName}</h3>
+						<p>{post.title}</p>
+						<p>{post.body}</p>
+						<p>{}</p>
+					</div>
+				))}
 			</div>
 		</div>
 	);
