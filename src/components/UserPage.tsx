@@ -1,6 +1,7 @@
 // src/components/UserPage.tsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 interface Address {
 	street: string;
@@ -8,7 +9,6 @@ interface Address {
 	city: string;
 	zipcode: string;
 }
-// Zdefiniowanie interfejsu User
 interface User {
 	id: number;
 	name: string;
@@ -20,10 +20,7 @@ interface User {
 	// 	suite: string;
 	// 	city: string;
 	// 	zipcode: string;
-	// Możesz dodać więcej pól zgodnie z danymi API
 }
-// Dodaj tutaj inne właściwości zgodnie z potrzebami
-// }
 
 // Używając zdefiniowanego typu dla danych użytkownika
 const UserPage = () => {
@@ -35,6 +32,7 @@ const UserPage = () => {
 	const [editSuite, setEditSuite] = useState("");
 	const [editCity, setEditCity] = useState("");
 	const [editZipcode, setEditZipcode] = useState("");
+	const { userDetails } = useAuth();
 
 	useEffect(() => {
 		const fetchUserData = async () => {
@@ -56,7 +54,7 @@ const UserPage = () => {
 
 	const handleEdit = () => {
 		if (userData) {
-			// setUserData({ ...userData, name: editName }); // Symulacja aktualizacji danych użytkownika
+			
 			// Symulacja aktualizacji danych użytkownika
 			setUserData({
 				...userData,
@@ -88,7 +86,6 @@ const UserPage = () => {
 			<button onClick={handleEdit}>Zapisz zmiany</button>
 			<p>Imię: {userData.name}</p>
 			<p>Email: {userData.email}</p>
-			{/* Tutaj możesz dodać więcej danych użytkownika, np. adres */}
 			{/* ///////////////////////////////////////////// */}cz 2
 			<div>
 				<h2>Strona użytkownika</h2>

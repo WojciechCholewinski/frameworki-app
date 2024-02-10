@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../index.css";
-// Reszta Twojego kodu komponentu
+import { useAuth } from "../context/AuthContext";
 
 interface Photo {
 	id: number;
 	thumbnailUrl: string;
 	title: string;
-	userId: number; // Dodano userId do interfejsu
+	userId: number; 
 	isOwner?: boolean; // Opcjonalne, dodane dla symulacji właścicielstwa
 }
 
@@ -17,6 +17,7 @@ const PhotoFeed = () => {
 	const [userIdFilter, setUserIdFilter] = useState(""); // Stan dla filtrowania po userId
 	const [newPhotoTitle, setNewPhotoTitle] = useState(""); // Stan dla tytułu nowego zdjęcia
 	const [newPhotoUrl, setNewPhotoUrl] = useState(""); // Stan dla URL nowego zdjęcia
+	const { userPhotos, addUserPhoto, removeUserPhoto } = useAuth(); // Użyj hooka do uzyskania dostępu do zdjęć użytkownika i funkcji dodającej zdjęcie
 
 	// Funkcja do pobierania zdjęć z opcjonalnym filtrowaniem
 	useEffect(() => {
@@ -28,26 +29,26 @@ const PhotoFeed = () => {
 				...photo,
 				//isOwner: Math.random() < 0.5, // Symulacja "właścicielstwa"
 			}));
-			// Zakładamy, że wszystkie zdjęcia z API są początkowo załadowane
-			setPhotos(photosWithOwnership);
+
+			setPhotos([...userPhotos, ...photosWithOwnership]); // Najpierw umieść zdjęcia użytkownika
 		};
 
 		fetchPhotos();
-	}, []); // Usunięcie userIdFilter z zależności, aby pobierać tylko raz
+	}, [userPhotos]); // Dodaj userPhotos do zależności, aby na nowo pobrać zdjęcia po dodaniu nowego zdjęcia przez użytkownika
 	const filteredPhotos = userIdFilter
 		? photos.filter(photo => String(photo.userId) === userIdFilter)
 		: photos;
 	// Funkcja do symulacji dodawania nowego zdjęcia
 	const handleAddPhoto = () => {
 		const newPhoto = {
-			id: Math.floor(Math.floor(Math.random() * 1001) + 5000), // Lepsza symulacja ID, użyj Math.floor dla całkowitych wartości
+			id: Math.floor(Math.floor(Math.random() * 1001) + 5000), 
 
 			thumbnailUrl: newPhotoUrl,
 			title: newPhotoTitle,
 			userId: parseInt(userIdFilter) || 1, // Przykładowe przypisanie do użytkownika
 			isOwner: true,
 		};
-		setPhotos([newPhoto, ...photos]);
+		addUserPhoto(newPhoto); // Dodajemy zdjęcie do kontekstu zamiast do stanu lokalnego
 		// Wyczyść pola formularza
 		setNewPhotoTitle("");
 		setNewPhotoUrl("");
@@ -56,6 +57,9 @@ const PhotoFeed = () => {
 	// Funkcja do symulacji usuwania zdjęcia
 	const handleDelete = (id: number) => {
 		setPhotos(photos.filter(photo => photo.id !== id));
+		
+		// Usuwamy zdjęcie z kontekstu, jeśli jest zdjęciem użytkownika
+		removeUserPhoto(id);
 	};
 
 	return (

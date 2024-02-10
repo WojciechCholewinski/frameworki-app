@@ -1,7 +1,8 @@
 // src/components/PostsPage.tsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import UserDetails from "./UserDetails"; // Import nowego komponentu
+import UserDetails from "./UserDetails";
+import { useAuth } from "../context/AuthContext";
 
 interface Post {
 	userId: number;
@@ -13,106 +14,117 @@ interface Post {
 interface Comment {
 	id: number;
 	body: string;
+	postId?: number; // Powiązanie z postem
+	userId: number;
 }
-
-// const PostsPage = () => {
-// 	const [posts, setPosts] = useState<Post[]>([]);
-// 	const [newPostTitle, setNewPostTitle] = useState("");
-// 	const [newPostBody, setNewPostBody] = useState("");
-
-// 	const handleAddPost = () => {
-// 		const newPost = {
-// 			id: Math.random(), // Symulacja unikalnego ID, w prawdziwej aplikacji ID powinno pochodzić z backendu
-// 			title: newPostTitle,
-// 			body: newPostBody,
-// 			userId: 1, // Zakładamy, że ID użytkownika jest znane lub pobierane z kontekstu autoryzacji
-// 		};
-// 		setPosts([newPost, ...posts]); // Dodajemy nowy post na początek listy
-// 		// Opcjonalnie, wyczyść pola formularza po dodaniu postu
-// 		setNewPostTitle("");
-// 		setNewPostBody("");
-// 	};
-
-// 	const handleDeletePost = postId => {
-// 		setPosts(posts.filter(post => post.id !== postId));
-// 	};
-
-// 	useEffect(() => {
-// 		const fetchPosts = async () => {
-// 			const response = await axios.get(
-// 				"https://jsonplaceholder.typicode.com/posts"
-// 			);
-// 			setPosts(response.data);
-// 		};
-
-// 		fetchPosts();
-// 	}, []);
-
-// 	return (
-// 		<div>
-// 			<h2>Posty</h2>
-// 			{/* Formularz dodawania postu */}
-// 			<div>
-// 				<input
-// 					type='text'
-// 					placeholder='Tytuł postu'
-// 					value={newPostTitle}
-// 					onChange={e => setNewPostTitle(e.target.value)}
-// 				/>
-// 				<textarea
-// 					placeholder='Treść postu'
-// 					value={newPostBody}
-// 					onChange={e => setNewPostBody(e.target.value)}></textarea>
-// 				<button onClick={handleAddPost}>Dodaj post</button>
-// 			</div>
-// 			{posts.map(post => (
-// 				<div key={post.id}>
-// 					<h3>{post.title}</h3>
-// 					<p>{post.body}</p>
-// 					{/* Miejsce na przyciski akcji */}
-// 				</div>
-// 			))}
-// 		</div>
-// 	);
-// };
-
-// export default PostsPage;
 
 const PostsPage = () => {
 	const [posts, setPosts] = useState<Post[]>([]);
-	const [newCommentBody, setNewCommentBody] = useState<string>("");
+	const [newPostTitle, setNewPostTitle] = useState("");
+	const [newPostBody, setNewPostBody] = useState("");
+	const [newCommentBody, setNewCommentBody] = useState("");
 	const [commentPostId, setCommentPostId] = useState<number | null>(null);
+	const {
+		currentUserId,
+		userPosts,
+		addUserPost,
+		userDetails,
+		removeUserPost,
+		addUserComment,
+		removeUserComment,
+		userComments,
+	} = useAuth();
 
 	useEffect(() => {
-		const fetchPosts = async () => {
-			const response = await axios.get(
+		const fetchPostsAndComments = async () => {
+			const postsResponse = await axios.get(
 				"https://jsonplaceholder.typicode.com/posts"
 			);
-			const postsWithComments = response.data.map((post: Post) => ({
+			const postsData: Post[] = postsResponse.data;
+
+			const commentsPromises = postsData.map(post =>
+				axios.get(
+					`https://jsonplaceholder.typicode.com/posts/${post.id}/comments`
+				)
+			);
+			const commentsResponses = await Promise.all(commentsPromises);
+			const postsWithAPIComments = postsData.map((post, index) => ({
 				...post,
-				comments: [],
+				comments: commentsResponses[index].data,
 			}));
-			setPosts(postsWithComments);
+
+
+			// Tutaj integruje komentarze użytkownika z postami
+			const postsWithAllComments = postsWithAPIComments.map(post => ({
+				...post,
+				comments: [
+					...(post.comments || []),
+					...userComments.filter(comment => comment.postId === post.id),
+				],
+			}));
+
+			setPosts([...userPosts, ...postsWithAllComments]);
 		};
 
-		fetchPosts();
-	}, []);
+		fetchPostsAndComments();
+	}, [userPosts, userComments]); // Dodanie userComments do zależności, aby reintegrować komentarze za każdym razem, gdy się zmienią
 
+	useEffect(() => {
+		const updatePostsWithComments = () => {
+			const updatedPosts = userPosts.map(post => {
+				const filteredComments = userComments.filter(
+					comment => comment.postId === post.id
+				);
+				return { ...post, comments: filteredComments };
+			});
+
+			setPosts([...updatedPosts]);
+		};
+
+		updatePostsWithComments();
+	}, [userPosts, userComments]); // Nasłuchiwanie na zmiany w userPosts i userComments
+
+	const handleAddNewPost = () => {
+		if (!userDetails) return; // Upewniam się, że mam dane użytkownika
+
+		const newPost = {
+			userId: userDetails.id,
+			id: Date.now(), // Używam timestamp jako symulacji ID
+			title: newPostTitle,
+			body: newPostBody,
+			comments: [],
+		};
+		addUserPost(newPost); // Dodaje post do stanu globalnego
+		setNewPostTitle("");
+		setNewPostBody("");
+	};
 	const handleAddComment = (postId: number) => {
+		if (!userDetails) return; // Upewniam się, że użytkownik jest zalogowany
+
 		const newComment = {
-			id: Math.random(), // Symulacja unikalnego ID
+			id: Date.now(), // Symulacja unikalnego ID
 			body: newCommentBody,
+			postId: postId, // Dodaje powiązanie z postem
+			userId: userDetails.id, // Ustaw userId zalogowanego użytkownika
 		};
+
+		addUserComment(newComment); // Dodaje komentarz do kontekstu
 		setPosts(
 			posts.map(post => {
 				if (post.id === postId) {
-					return { ...post, comments: [...(post.comments ?? []), newComment] };
+					const updatedComments = [...(post.comments || []), newComment];
+					return { ...post, comments: updatedComments };
 				}
 				return post;
 			})
 		);
 		setNewCommentBody("");
-		setCommentPostId(null); // Resetuj ID posta po dodaniu komentarza
+		setCommentPostId(null); // Resetuje ID posta po dodaniu komentarza
+	};
+
+	const handleDeletePost = (postId: number) => {
+		removeUserPost(postId); // Usuwam post z kontekstu
+		setPosts(posts.filter(post => post.id !== postId)); // Usuwam post z lokalnego stanu
 	};
 
 	const handleDeleteComment = (postId: number, commentId: number) => {
@@ -128,26 +140,44 @@ const PostsPage = () => {
 				return post;
 			})
 		);
+		removeUserComment(commentId);
 	};
 
 	return (
 		<div>
+			<h2>Dodaj nowy post</h2>
+			<input
+				value={newPostTitle}
+				onChange={e => setNewPostTitle(e.target.value)}
+				placeholder='Tytuł posta'
+			/>
+			<textarea
+				value={newPostBody}
+				onChange={e => setNewPostBody(e.target.value)}
+				placeholder='Treść posta'
+			/>
+			<button onClick={handleAddNewPost}>Dodaj post</button>
+
 			<h2>Posty</h2>
 			{posts.map(post => (
 				<div key={post.id}>
 					<h3>{post.title}</h3>
 					<p>{post.body}</p>
-					<UserDetails userId={post.userId} /> // Wyświetlenie informacji o
-					użytkowniku
+					<UserDetails userId={post.userId} />
+					{userDetails?.id === post.userId && (
+						<button onClick={() => handleDeletePost(post.id)}>Usuń post</button>
+					)}
 					<div>
 						Komentarze:
 						{post.comments?.map(comment => (
 							<div key={comment.id}>
 								<p>{comment.body}</p>
-								<button
-									onClick={() => handleDeleteComment(post.id, comment.id)}>
-									Usuń komentarz
-								</button>
+								{comment.userId === currentUserId && (
+									<button
+										onClick={() => handleDeleteComment(post.id, comment.id)}>
+										Usuń komentarz
+									</button>
+								)}
 							</div>
 						))}
 						{commentPostId === post.id ? (
@@ -169,5 +199,4 @@ const PostsPage = () => {
 		</div>
 	);
 };
-
 export default PostsPage;
