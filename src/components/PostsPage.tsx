@@ -3,6 +3,100 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import UserDetails from "./UserDetails";
 import { useAuth } from "../context/AuthContext";
+import styled from "styled-components";
+
+const PageContainer = styled.div`
+	padding: 20px;
+	background-color: #f9f9f9;
+	width: 60%; // Ustawienie szerokości na 70%
+	margin: auto; // Wyśrodkowanie kontenera
+`;
+
+const HeaderContainer = styled.div`
+	text-align: center;
+	margin-bottom: 20px;
+`;
+
+// Style dla postów
+const PostContainer = styled.div`
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+	padding: 20px;
+	transition: box-shadow 0.3s ease-in-out;
+
+	&:hover {
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+`;
+
+const PostTitle = styled.h3`
+	color: #007bff;
+	margin-bottom: 10px;
+`;
+
+const PostBody = styled.p`
+	line-height: 1.6;
+`;
+
+// Style dla komentarzy
+const CommentContainer = styled.div`
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	padding: 10px;
+	margin-top: 10px;
+`;
+
+const CommentBody = styled.p`
+	margin: 0;
+	font-size: 0.9rem;
+`;
+
+// Style dla przycisków
+const Button = styled.button`
+	padding: 5px 10px;
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+
+	&:hover {
+		background-color: #0056b3;
+	}
+
+	&:not(:last-child) {
+		margin-right: 10px;
+	}
+`;
+
+const Input = styled.input`
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+`;
+
+const Textarea = styled.textarea`
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	height: 100px;
+`;
+
+const CommentsSection = styled.div`
+	margin-top: 20px;
+`;
+
+const ButtonContainer = styled.div`
+	text-align: right;
+	margin-top: 0px; // Dodaje trochę miejsca nad przyciskami
+`;
 
 interface Post {
 	userId: number;
@@ -24,6 +118,8 @@ const PostsPage = () => {
 	const [newPostBody, setNewPostBody] = useState("");
 	const [newCommentBody, setNewCommentBody] = useState("");
 	const [commentPostId, setCommentPostId] = useState<number | null>(null);
+	const [isFormVisible, setIsFormVisible] = useState(false);
+
 	const {
 		currentUserId,
 		userPosts,
@@ -52,7 +148,6 @@ const PostsPage = () => {
 				...post,
 				comments: commentsResponses[index].data,
 			}));
-
 
 			// Tutaj integruje komentarze użytkownika z postami
 			const postsWithAllComments = postsWithAPIComments.map(post => ({
@@ -144,59 +239,78 @@ const PostsPage = () => {
 	};
 
 	return (
-		<div>
-			<h2>Dodaj nowy post</h2>
-			<input
-				value={newPostTitle}
-				onChange={e => setNewPostTitle(e.target.value)}
-				placeholder='Tytuł posta'
-			/>
-			<textarea
-				value={newPostBody}
-				onChange={e => setNewPostBody(e.target.value)}
-				placeholder='Treść posta'
-			/>
-			<button onClick={handleAddNewPost}>Dodaj post</button>
+		<PageContainer>
+			<HeaderContainer>
+				<h2 style={{ textAlign: "center" }}>Posty</h2>
 
-			<h2>Posty</h2>
+				<Button onClick={() => setIsFormVisible(!isFormVisible)}>
+					Dodaj nowy post
+				</Button>
+			</HeaderContainer>
+
+			{isFormVisible && (
+				<>
+					<Input
+						value={newPostTitle}
+						onChange={e => setNewPostTitle(e.target.value)}
+						placeholder='Tytuł posta'
+					/>
+					<Textarea
+						value={newPostBody}
+						onChange={e => setNewPostBody(e.target.value)}
+						placeholder='Treść posta'
+					/>
+					<Button onClick={handleAddNewPost}>Dodaj post</Button>
+					<br />
+					<br />
+				</>
+			)}
+
 			{posts.map(post => (
-				<div key={post.id}>
-					<h3>{post.title}</h3>
-					<p>{post.body}</p>
+				<PostContainer key={post.id}>
 					<UserDetails userId={post.userId} />
+					<PostTitle>{post.title}</PostTitle>
+					<PostBody>{post.body}</PostBody>
 					{userDetails?.id === post.userId && (
-						<button onClick={() => handleDeletePost(post.id)}>Usuń post</button>
+						<ButtonContainer>
+							<Button onClick={() => handleDeletePost(post.id)}>
+								Usuń post
+							</Button>
+						</ButtonContainer>
 					)}
-					<div>
+					<CommentsSection>
 						Komentarze:
 						{post.comments?.map(comment => (
-							<div key={comment.id}>
-								<p>{comment.body}</p>
+							<CommentContainer key={comment.id}>
+								<CommentBody>{comment.body}</CommentBody>
 								{comment.userId === currentUserId && (
-									<button
-										onClick={() => handleDeleteComment(post.id, comment.id)}>
-										Usuń komentarz
-									</button>
+									<ButtonContainer>
+										<Button
+											onClick={() => handleDeleteComment(post.id, comment.id)}>
+											Usuń komentarz
+										</Button>
+									</ButtonContainer>
 								)}
-							</div>
+							</CommentContainer>
 						))}
 						{commentPostId === post.id ? (
 							<>
-								<textarea
+								<Textarea
 									value={newCommentBody}
 									onChange={e => setNewCommentBody(e.target.value)}
-									placeholder='Dodaj komentarz'></textarea>
-								<button onClick={() => handleAddComment(post.id)}>Dodaj</button>
+									placeholder='Dodaj komentarz'
+								/>
+								<Button onClick={() => handleAddComment(post.id)}>Dodaj</Button>
 							</>
 						) : (
-							<button onClick={() => setCommentPostId(post.id)}>
+							<Button onClick={() => setCommentPostId(post.id)}>
 								Dodaj komentarz
-							</button>
+							</Button>
 						)}
-					</div>
-				</div>
+					</CommentsSection>
+				</PostContainer>
 			))}
-		</div>
+		</PageContainer>
 	);
 };
 export default PostsPage;

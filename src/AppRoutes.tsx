@@ -14,21 +14,20 @@ import PhotoSearch from "./components/PhotoSearch";
 import PostsPage from "./components/PostsPage";
 import { useAuth } from "./context/AuthContext"; 
 import Navbar from "./components/NavBar";
+import Footer from "./components/Footer";
 
 interface PrivateRouteProps {
 	children: React.ReactElement;
 }
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-	const { isLoggedIn } = useAuth(); // Używamy kontekstu, aby sprawdzić, czy użytkownik jest zalogowany
+	const { isLoggedIn } = useAuth(); // Używam kontekstu, aby sprawdzić, czy użytkownik jest zalogowany
 	return isLoggedIn ? children : <Navigate to='/login' />;
 };
-
-
 
 const AppRoutes = () => {
 	return (
 		<Router>
-			<Navbar /> {/* Dodajemy Navbar */}
+			<Navbar />
 			<Routes>
 				<Route path='/login' element={<LoginPage />} />
 				<Route path='/' element={<LoginPage />} />
@@ -52,8 +51,8 @@ const AppRoutes = () => {
 					path='/posts'
 					element={<PrivateRoute>{<PostsPage />}</PrivateRoute>}
 				/>
-
 			</Routes>
+			<Footer />
 		</Router>
 	);
 };

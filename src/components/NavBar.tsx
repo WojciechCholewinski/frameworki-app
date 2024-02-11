@@ -1,6 +1,6 @@
 // src/components/Navbar.tsx
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../context/AuthContext";
@@ -23,12 +23,12 @@ const NavLink = styled(Link)`
 	text-decoration: none;
 	color: #007bff;
 	&:hover {
-		background-color: #e7e7e7; // Zmiana tła przy najechaniu
-		color: #007bff; // Zmiana koloru tekstu, aby podkreślić interaktywność
+		background-color: #e7e7e7;
+		color: #007bff;
 	}
 	color: inherit; // Spójny kolor tekstu z otoczeniem
-	padding: 15px; // Padding dla lepszego wyglądu
-	border-radius: 5px; // Zaokrąglenie krawędzi dla efektu po najechaniu
+	padding: 15px; 
+	border-radius: 5px;
 `;
 const LogoutButton = styled.button`
 	background: none;
@@ -58,26 +58,22 @@ const Navbar = () => {
 			<div></div>
 			<NavList>
 				<li>
-					<NavLink to='/photos'>Feed zdjęć</NavLink>
+					<NavLink to='/photos'>Galeria</NavLink>
 				</li>
 				<li>
-					<NavLink to='/user'>Strona użytkownika</NavLink>
+					<NavLink to='/user'>Mój profil</NavLink>
 				</li>
 				<li>
-					<NavLink to='/search-users'>Wyszukiwanie użytkowników</NavLink>
+					<NavLink to='/search-users'>Użytkownicy</NavLink>
 				</li>
 				<li>
-					<NavLink to='/search-photos'>Wyszukiwanie zdjęć</NavLink>
+					<NavLink to='/search-photos'>Wyszukiwarka zdjęć</NavLink>
 				</li>
 				<li>
 					<NavLink to='/posts'>Posty</NavLink>
 				</li>
-
-				
-
-			
 			</NavList>
-            <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+			<LogoutButton onClick={handleLogout}>Wyloguj</LogoutButton>
 		</Nav>
 	);
 };
