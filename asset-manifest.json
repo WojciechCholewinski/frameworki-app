@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/frameworki-app/static/css/main.6d4249af.css",
+    "main.js": "/frameworki-app/static/js/main.61c0588a.js",
+    "static/js/592.a5e3c6e2.chunk.js": "/frameworki-app/static/js/592.a5e3c6e2.chunk.js",
+    "index.html": "/frameworki-app/index.html",
+    "main.6d4249af.css.map": "/frameworki-app/static/css/main.6d4249af.css.map",
+    "main.61c0588a.js.map": "/frameworki-app/static/js/main.61c0588a.js.map",
+    "592.a5e3c6e2.chunk.js.map": "/frameworki-app/static/js/592.a5e3c6e2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6d4249af.css",
+    "static/js/main.61c0588a.js"
+  ]
+}
