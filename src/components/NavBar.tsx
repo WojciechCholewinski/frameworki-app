@@ -11,12 +11,21 @@ const Nav = styled.nav`
 	align-items: center;
 	padding: 20px 20px 20px 20px;
 	background-color: #f8f9fa;
+	flex-wrap: wrap;
+
+	@media (max-width: 768px) {
+		padding: 10px;
 `;
 
 const NavList = styled.ul`
 	list-style: none;
 	display: flex;
 	gap: 20px;
+
+	@media (max-width: 768px) {
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
 `;
 
 const NavLink = styled(Link)`
@@ -29,6 +38,10 @@ const NavLink = styled(Link)`
 	color: inherit; // Spójny kolor tekstu z otoczeniem
 	padding: 15px; 
 	border-radius: 5px;
+
+	@media (max-width: 768px) {
+		padding: 10px;
+		font-size: 14px;
 `;
 const LogoutButton = styled.button`
 	background: none;
@@ -43,6 +56,9 @@ const LogoutButton = styled.button`
 		background-color: #007bff;
 		color: #e7e7e7;
 	}
+
+	@media (max-width: 768px) {
+		padding: 5px 10px;
 `;
 const Navbar = () => {
 	const { logout } = useAuth(); // Użyj logout z useAuth

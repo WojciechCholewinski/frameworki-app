@@ -14,7 +14,13 @@ const UserDetailsSection = styled.section`
 	background-color: #fff;
 	border-radius: 8px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	margin: 0px 30% 30px 30%;
+	margin: 20px auto; // Centrowanie na stronie
+	width: 80%; // Szerokość na mniejszych ekranach
+	max-width: 600px; // Maksymalna szerokość dla dużych ekranów
+
+	@media (min-width: 768px) {
+		margin: 0px 30% 30px 30%; // Marginesy dla większych ekranów
+	}
 `;
 
 const UserContentSection = styled.section`
